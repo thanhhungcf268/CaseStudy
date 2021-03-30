@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    * {
+        padding: 0;
+        margin: 0
+    }
+
+    canvas {
+        position: absolute;
+        background: black;
+        display: block;
+        margin-left: 450px;
+    }
+</style>
+<body>
+<div>
+    <canvas id="myCanvas" width="550" height="620"></canvas>
+</div>
+<div id="diva" style="background: lightgrey;width: 200px;height: 200px;position: absolute;margin-left: 1000px;">
+    <p id="myOpen"></p>
+    <button type="button" onclick="Start()" style="margin-left: 70px;margin-top: 70px;"><h1 style="color: olivedrab">Play</h1></button>
+</div>
+<audio>
+</audio>
+</body>
+<script>
+    let game = false;
+    const v = document.createElement("audio")
+    v.src = "gameOver.mp3";
+    const v1 = document.createElement('audio');
+    v1.src = "anDiem.mp3";
+    const v12 = document.createElement('audio');
+    v12.src = "ngu_loi_no.mp3"
+    let scored = 0;
+    let canvas = document.getElementById("myCanvas");
+    let ctx = canvas.getContext("2d");
+    //---------------class ball
+    let x = canvas.width / 2;
+    let x1 = canvas.width / 2;
+    let x2 = canvas.width / 2;
+    let y = canvas.height - 30;
+    let dx = 4;
+    let dy = -4;
+    let dx1 = 4;
+    let dx2 = 6;
+    const ballRadius = 10;
+    let value = true;
+    let counts = 0;
+    let n = "a1";
+    const rang3 = 90;
+    let color = '#2EFE2E';
+
+    //bongs
+    function dawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    let paddleHeight = 8;
+    let paddleWidth = 100;
+    let paddleX = (canvas.width - paddleWidth) / 2;
+    let rightPressed = false;
+    let leftPressed = false;
+    let px = 6;
+
+    function moveLeft() {
+        paddleX -= px;
+    }
+
+    function moveRight() {
+        paddleX += px;
+    }
+
+    function drawScore() {
+        document.getElementById('diva').style.background = color;
+        document.getElementById("myOpen").textContent = "Score: " + scored;
+    }
+
+    //thanh lot ban
+    function dawPaddle() {
+        ctx.beginPath();
+        ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    const widtha = 25;
+    const range2 = 80;
+    let paddwidth = 70;
+
+    function barrier() {
+        ctx.beginPath();
+        ctx.rect(widtha, paddleHeight + range2, paddwidth, paddleHeight);
+        ctx.fillStyle = "#FF0040";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function barrier2() {
+        ctx.beginPath();
+        ctx.rect(widtha + paddwidth + range2, paddleHeight + range2, paddwidth, paddleHeight);
+        ctx.fillStyle = "#F2F5A9";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function barrier3() {
+        ctx.beginPath();
+        ctx.rect(widtha + (paddwidth + range2) * 2, paddleHeight + range2, paddwidth, paddleHeight);
+        ctx.fillStyle = "#2E2EFE";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function barrier4() {
+        ctx.beginPath();
+        ctx.rect(widtha + (paddwidth + range2) * 3, paddleHeight + range2, paddwidth, paddleHeight);
+        ctx.fillStyle = '#FF8000';
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function deletes(a) {
+        if (!game) {
+            if (a) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawScore();
+                dawBall();
+                dawPaddle();
+                Scored();
+                barrier();
+                barrier2();
+                barrier3();
+                barrier4();
+                paddle()
+                drawCar(n);
+                handle()
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawScore();
+                dawBall();
+                dawPaddle();
+                paddle()
+                drawCar(n);
+                handle()
+                paddle2()
+                counts++;
+                if (counts === 1000) {
+                    counts = 0;
+                    return value = true;
+                }
+            }
+        }
+    }
+
+    function paddle() {
+        ctx.beginPath();
+        ctx.rect(x1 - (rang3 / 2), canvas.height / 2, rang3, paddleHeight);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.closePath();
+        if (y + dy > canvas.height / 2 && y + dy < (canvas.height / 2) + paddleHeight) {
+            if (x > x1 - (rang3 / 2) && x < x1 - (rang3 / 2) + rang3) {
+                dy = -dy;
+            }
+        }
+        if (x + dx > x1 - (rang3 / 2) && x + dx < x1 - (rang3 / 2) + rang3) {
+            if (y < canvas.height / 2 && y > canvas.height / 2 - paddleHeight) {
+                dx = -dx;
+            }
+        }
+    }
+
+    function paddle2() {
+        ctx.beginPath();
+        ctx.rect(x2 - (rang3 / 2), canvas.height / 2 - 100, rang3, paddleHeight);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.closePath();
+        if (y + dy > canvas.height / 2 - 100 && y + dy < (canvas.height / 2) - 100 + paddleHeight) {
+            if (x > x1 - (rang3 / 2) && x < x1 - (rang3 / 2) + rang3) {
+                dy = -dy;
+            }
+        }
+        if (x + dx > x2 - (rang3 / 2) && x + dx < x2 - (rang3 / 2) + rang3) {
+            if (y < canvas.height / 2 - 100 && y > canvas.height / 2 - 100 - paddleHeight) {
+                dx = -dx;
+            }
+        }
+    }
+
+    function drawCar(img) {
+        let image = new Image();
+        image.src = "images/" + img + ".jpg";
+        if (y + dy < image.height) {
+            if (x > canvas.width / 2 - image.width / 2 && x < canvas.width / 2 + image.width / 2) {
+                v12.play();
+                dy = -dy;
+                scored += 2;
+            }
+        }
+        if (x + dx > canvas.width / 2 - image.width / 2 && x + dx < canvas.width / 2 + image.width / 2) {
+            if (y < image.height) {
+                v12.play();
+                dx = -dx;
+                scored += 2;
+            }
+        }
+        image.onload = () => {
+            ctx.drawImage(image, (canvas.width - image.width) / 2, 0);
+        }
+        ctx.drawImage(image, (canvas.width - image.width) / 2, 0);
+    }
+
+    // thanh đỡ ở giữa
+    function Scored() {
+        //thanh chắn 1;
+        if (x + dx > widtha + paddwidth && x + dx < widtha) {
+            if (y < 16 + range2 && y > range2 + paddleHeight) {
+                dx = -dx;
+                color = '#FE2E2E';
+            }
+        }
+        if (y + dy < ballRadius + paddleHeight + range2 && y + dy > range2) {
+            if (x > widtha && x < widtha + 70) {
+                dy = -dy;
+                color = '#FE2E2E';
+                if (y + dy > ballRadius + paddleHeight + range2) {
+                    scored++;
+                    return value = false;
+                }
+            }
+        }
+        //thanh chan 2
+        if (x + dx > widtha * 2 + paddwidth && x + dx < widtha * 2 + paddwidth * 2) {
+            if (y < 16 + range2 && y > range2 + paddleHeight) {
+                dx = -dx;
+                color = "#F2F5A9";
+            }
+        }
+        if (y + dy < ballRadius + paddleHeight + range2 && y + dy > range2) {
+            if (x > widtha + 70 + range2 && x < widtha + 140 + range2) {
+                dy = -dy;
+                color = "#F2F5A9";
+            }
+        }
+        //thanh chắn 3
+        if (x + dx > widtha * 3 + paddwidth * 2 && x + dx < widtha * 3 + paddwidth * 3) {
+            if (y < 16 + range2 && y > range2 + paddleHeight) {
+                dx = -dx;
+                color = '#0000FF';
+            }
+        }
+        if (y + dy < ballRadius + paddleHeight + range2 && y + dy > range2) {
+            if (x > widtha + (70 + range2) * 2 && x < 70 + widtha + (70 + range2) * 2) {
+                dy = -dy;
+                color = '#0000FF';
+            }
+        }
+        //thanh chắn 4
+        if (x + dx > widtha * 4 + paddwidth * 3 && x + dx < widtha * 4 + paddwidth * 4) {
+            if (y < 16 + range2 && y > range2 + paddleHeight) {
+                dx = -dx;
+                color = '#FF8000';
+            }
+        }
+        if (y + dy < ballRadius + paddleHeight + range2 && y + dy > range2) {
+            if (x > widtha + (70 + range2) * 3 && x < 70 + widtha + (70 + range2) * 3) {
+                dy = -dy;
+                color = '#FF8000';
+            }
+        }
+    }
+
+    function daw() {
+        deletes(value)
+        x1 += dx1;
+        if (x1 + dx1 > canvas.width - paddwidth || x1 + dx1 < paddwidth) {
+            dx1 = -dx1;
+        }
+        x2 += dx2;
+        if (x2 + dx2 > canvas.width - paddwidth || x2 + dx2 < paddwidth) {
+            dx2 = -dx2;
+        }
+        x += dx;
+        y += dy;
+        // chặn 2 bên;
+        if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+            dx = -dx;
+        }
+        // thanh trần ;
+        if (y + dy < ballRadius) {
+            dy = -dy;
+        }
+        //thanh chặn dưới ;
+        if (y + dy > canvas.height - ballRadius - paddleHeight) {
+            if (x > paddleX && x < paddleX + paddleWidth) {
+                dy = -dy;
+                v1.play();
+            }
+        }
+        if (x + dx > paddleX && x + dx < paddleX + paddleWidth) {
+            if (y < canvas.height && y > canvas.height - paddleHeight) {
+                dx = -dx;
+            }
+        }
+        switch (scored) {
+            case 50: {
+                n = "a2"
+                break;
+            }
+            case 150: {
+                n = "a3"
+                break;
+            }
+            case 200: {
+                n = "a4"
+                break;
+            }
+        }
+        if (y + dy > canvas.height - ballRadius) {
+            GameOver();
+        }
+        if (scored >= 200) {
+            document.getElementById("myCanvas").style.background = '#EFFBFB';
+            ctx.font = "80px Verdana";
+            let gradient1 = ctx.createLinearGradient(canvas.width / 2, canvas.height / 2, canvas.width, 0);
+            gradient1.addColorStop("0", "magenta");
+            gradient1.addColorStop("0.5", "blue");
+            gradient1.addColorStop("1.0", "red");
+            ctx.fillStyle = gradient1;
+            ctx.fillText("YOU WIN !", 10, canvas.height/2);
+        }
+        if (rightPressed && paddleX < canvas.width - paddleWidth) {
+            paddleX += px;
+        } else if (leftPressed && paddleX > 0) {
+            paddleX -= px;
+        }
+    }
+
+    function GameOver() {
+        v.play();
+        document.getElementById("myCanvas").style.background = '#EFFBFB';
+        ctx.font = "80px Verdana";
+        let gradient = ctx.createLinearGradient(0,0,canvas.width, 0);
+        gradient.addColorStop("0", "magenta");
+        gradient.addColorStop("0.5", "blue");
+        gradient.addColorStop("1.0", "red");
+        ctx.fillStyle = gradient;
+        ctx.fillText("GAME OVER !", 0, canvas.height/2);
+        game = true;
+    }
+    function Start() {
+        document.location.reload();
+        game = false;
+    }
+
+    setInterval(daw, 10);
+
+    //-----------------------------------
+    function keydownMove(event) {
+        switch (event.keyCode) {
+            case 37: {
+                moveLeft();
+                leftPressed = true;
+                break;
+            }
+            case 39: {
+                moveRight();
+                rightPressed = true;
+                break;
+            }
+        }
+    }
+
+    function keyupMove(event) {
+        switch (event.keyCode) {
+            case 37: {
+                leftPressed = false;
+                break;
+            }
+            case 39: {
+                rightPressed = false;
+                break;
+            }
+        }
+    }
+
+    window.addEventListener("keydown", keydownMove);
+    window.addEventListener("keyup", keyupMove);
+    const array = [];
+
+    class Paticle {
+        constructor(coler) {
+            this.x = x;
+            this.y = y;
+            this.size = Math.random() * 7 + 3;
+            this.speedy = Math.random() - 0.5;
+            this.color = coler;
+        }
+
+        update() {
+            this.x -= 0.5;
+            this.y += 1.5;
+            this.y += this.speedy;
+        }
+
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
+            ctx.fill();
+        }
+    }
+
+    function handle() {
+        array.unshift(new Paticle(color));
+        for (let i = 0; i < array.length; i++) {
+            array[i].update();
+            array[i].draw();
+        }
+        if (array.length > 200) {
+            for (let i = 0; i < 20; i++) {
+                array.pop()
+            }
+        }
+    }
+
+</script>
+</html>
