@@ -302,13 +302,13 @@
             dy = -dy;
         }
         //thanh chặn dưới ;
-        if (y + dy > canvas.height - ballRadius - paddleHeight) {
-            if (x > paddleX && x < paddleX + paddleWidth) {
+        if (y + dy > canvas.height - paddleHeight - ballRadius) {
+            if (x > paddleX+5 && x < paddleX + paddleWidth+5) {
                 dy = -dy;
                 v1.play();
             }
         }
-        if (x + dx > paddleX && x + dx < paddleX + paddleWidth) {
+        if (x + dx > paddleX+5 && x + dx < paddleX + paddleWidth+5) {
             if (y < canvas.height && y > canvas.height - paddleHeight) {
                 dx = -dx;
             }
@@ -327,7 +327,7 @@
                 break;
             }
         }
-        if (y + dy > canvas.height - ballRadius) {
+        if (y + dy > canvas.height) {
             GameOver();
         }
         if (scored >= 200) {
